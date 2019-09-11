@@ -3,20 +3,24 @@ import schedule
 import time
 import os
 
+'''
+nohup python auto_commit.py &
+'''
 
-def update_readme(message):
-    os.system("sed -i '$d' README.md")
-    os.system('echo "{}" >> README.md'.format(message))
-    os.system('git add README.md')
-    os.system('git commit -m "update"')
-    os.system('git push')
-    print('update github readme.md: ', message)
-
-if __name__ == "__main__":
+def update_readme():
     now=datetime.datetime.now()
     ts=now.strftime('%Y-%m-%d %H:%M:%S')
     message="update at {}".format(ts)
-    schedule.every(10).seconds.do(update_readme, message=ts)
+    os.system('git add ./*')
+    os.system('git commit -m "update"')
+    os.system('git push')
+    with open('log.txt','a+',encoding='utf-8') as f:    
+        f.write(message)
+        f.write('\n')
+        print(message)
+
+if __name__ == "__main__":
+    schedule.every(6).hours.do(update_readme)
 
     while True:
         schedule.run_pending()
